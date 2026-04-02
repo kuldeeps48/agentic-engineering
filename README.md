@@ -12,11 +12,11 @@ The pipeline orchestrates **5 specialized agents** across **up to 11 context win
 
 ### Pipeline Stages
 
-| Stage | Agent | Role |
-|-------|-------|------|
-| **1. Architecture** | Architect | Analyzes requirements, researches the codebase via Explore subagents, and produces a detailed design document — scrutinized by a GPT cross-model verifier |
-| **2. Implementation** | Implementer | Follows the architecture document task-by-task, writing code, tests, and migrations. Stays alive throughout the entire pipeline |
-| **3. Code Review** | Code Reviewer | Multi-pass review across 10 categories, cross-verified by GPT Scrutinizer in two independent rounds. Findings are auto-fixed by the Implementer, then re-reviewed from scratch |
+| Stage                 | Agent         | Role                                                                                                                                                                           |
+| --------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **1. Architecture**   | Architect     | Analyzes requirements, researches the codebase via Explore subagents, and produces a detailed design document — scrutinized by a GPT cross-model verifier                      |
+| **2. Implementation** | Implementer   | Follows the architecture document task-by-task, writing code, tests, and migrations. Stays alive throughout the entire pipeline                                                |
+| **3. Code Review**    | Code Reviewer | Multi-pass review across 10 categories, cross-verified by GPT Scrutinizer in two independent rounds. Findings are auto-fixed by the Implementer, then re-reviewed from scratch |
 
 ### Agents
 

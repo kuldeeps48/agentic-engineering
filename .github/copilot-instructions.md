@@ -1,4 +1,4 @@
-# COEBRA Platform Backend - AI Coding Agent Instructions
+# Platform Backend - AI Coding Agent Instructions
 
 ## System Overview
 
@@ -165,9 +165,9 @@ def handler(request: Request):
 
 ### Three-User Authorization Pattern
 
-All apps support three caller types: **COEUS** (platform operator), **Manufacturer** (customer), and **Payer** (participant). Routes must branch on caller type for ownership validation and data scoping.
+All apps support three caller types: **Admin** (platform operator), **Manufacturer** (customer), and **Payer** (participant). Routes must branch on caller type for ownership validation and data scoping.
 
-- `current_user.is_coeus_user` — full access, no ownership check
+- `current_user.is_admin_user` — full access, no ownership check
 - `is_customer_user(current_user, tenant, org_id)` — from `common.utils`, manufacturer-scoped access
 - Payer — validate `participant.organization_id` against `get_current_user_organization_id()`
 
@@ -319,7 +319,7 @@ Tests in `tests/` directory. Run with pytest from project root.
 pytest tests/
 
 # Run specific test file
-pytest tests/coebra_patient_id/test_coebra_patient_id_generation_service.py -v
+pytest tests/patient_id/test_patient_id_generation_service.py -v
 ```
 
 **Test patterns:**
@@ -379,7 +379,7 @@ JWT signature verification is intentionally disabled (`verify_signature: False`)
 
 ## Common Gotchas
 
-1. **App naming:** Code uses `VBC`/`REBATE`/`INTELLIGENT_WORKSPACE` internally → user-facing is ValueIQ/RebateIQ/AccessIQ. All apps support three user contexts: **COEUS** (platform operator), **Manufacturer** (customer), and **Payer** (participant). Use `is_coeus_user`, `is_customer_user()`, and payer ownership validation to branch controller logic
+1. **App naming:** Code uses `VBC`/`REBATE`/`INTELLIGENT_WORKSPACE` internally → user-facing is ValueIQ/RebateIQ/AccessIQ. All apps support three user contexts: **Admin** (platform operator), **Manufacturer** (customer), and **Payer** (participant). Use `is_admin_user`, `is_customer_user()`, and payer ownership validation to branch controller logic
 2. **Forgetting `tables.py`:** New tenant provisioning will fail silently
 3. **Missing `__table_args__`:** Multi-tenancy breaks - queries go to wrong schema
 4. **Passing context as params:** Use `get_context_vars()` - never thread context through functions

@@ -1,12 +1,12 @@
 ---
 name: new-module
 description: >-
-  Scaffold a new backend module for the COEBRA healthcare SaaS platform. Creates controller, crud_service, models, schema, and constants files with correct patterns.
+  Scaffold a new backend module for the Platform healthcare SaaS platform. Creates controller, crud_service, models, schema, and constants files with correct patterns.
   USE FOR: create module, new module, scaffold module, add module, new feature, new endpoint, add API, create API, new controller, new route, scaffold feature, add feature module, create backend feature.
   DO NOT USE FOR: modifying existing modules, database migrations (use migrations skill), code review (use code-review skill), creating mockups (use mockup-guidelines skill).
 ---
 
-# New Module — COEBRA Platform Backend
+# New Module — Platform Backend
 
 > **Purpose:** Scaffold a new backend module with all required files following established project patterns. Every new module needs 5-6 files created correctly and wired into the app.
 
@@ -168,7 +168,7 @@ def delete(request: Request, item_id: int):
 
 #### Three-User Authorization Template
 
-For modules that need caller-type branching (COEUS / Manufacturer / Payer), add this pattern inside route handlers:
+For modules that need caller-type branching (Admin / Manufacturer / Payer), add this pattern inside route handlers:
 
 ```python
 from common.utils import is_customer_user
@@ -185,7 +185,7 @@ def get_items(
     response: Response,
     x_tenant_id: Annotated[str, Header()],
     x_tenant_app_id: Annotated[int, Header()],
-    participant_id: int = Query(...),  # Required for payer, optional for manufacturer/COEUS
+    participant_id: int = Query(...),  # Required for payer, optional for manufacturer/Admin
 ):
     current_user = get_current_user()
     org_id = get_current_user_organization_id()
@@ -193,8 +193,8 @@ def get_items(
 
     tenant_app = get_tenant_app_by_id(x_tenant_app_id)
 
-    if current_user.is_coeus_user:
-        # COEUS: full access, no ownership check
+    if current_user.is_admin_user:
+        # Admin: full access, no ownership check
         pass
     elif is_customer_user(current_user, tenant_app.tenant, org_id):
         # Manufacturer: access manufacturer-scoped data only

@@ -1,14 +1,14 @@
 ---
 name: mockup-guidelines
 description: >-
-  HTML mockup creation and modification for COEBRA healthcare SaaS modules (ValueIQ, RebateIQ, AccessIQ).
+  HTML mockup creation and modification for Platform healthcare SaaS modules (ValueIQ, RebateIQ, AccessIQ).
   USE FOR: create mockup, design mockup, build mockup, HTML prototype, new screen, modify mockup, update mockup, screen mockup, UI mockup, feature mockup, dashboard mockup, manufacturer view, payer view, persona mockup, AccessIQ screen, ValueIQ screen, RebateIQ screen, interactive prototype, mockup file, self-contained HTML, inline CSS, inline JS, multi-persona design, persona-based UI, healthcare mockup, pharma mockup.
   DO NOT USE FOR: backend development, API work, database migrations, production UI implementation (use FastAPI modules instead).
 ---
 
-# Mockup Guidelines — COEBRA Platform
+# Mockup Guidelines — Platform
 
-> **Audience:** AI coding agents creating or modifying HTML mockups for COEBRA modules.
+> **Audience:** AI coding agents creating or modifying HTML mockups for Platform modules.
 > Read this file in full before starting any mockup work.
 
 ---

@@ -60,7 +60,7 @@ src/features/<name>/
 - **Forms:** Use `react-hook-form` with `useForm<FormType>()`. Validation via resolver or inline rules.
 - **Dates:** Use `dayjs` — never raw `Date` or `moment`.
 - **Sanitization:** Use `DOMPurify.sanitize()` for any user-generated HTML content.
-- **Three user types:** COEUS (platform operator), Manufacturer (customer), Payer (participant). UI components must gate visibility based on user type and permissions.
+- **Three user types:** Admin (platform operator), Manufacturer (customer), Payer (participant). UI components must gate visibility based on user type and permissions.
 
 ## Reference Pattern
 
@@ -136,7 +136,7 @@ Rules for this pass:
 - Use DOMPurify.sanitize() for any HTML content
 - Axios interceptor strips .data — don't double-unwrap
 - Add i18n keys as SCREAMING_SNAKE_CASE
-- Gate UI by user type (COEUS/Manufacturer/Payer) and permissions
+- Gate UI by user type (Admin/Manufacturer/Payer) and permissions
 ```
 
 ## Task File Format
@@ -148,7 +148,7 @@ Every numbered task file MUST include:
 
 **[Requires: 01, 02, ...]**
 **Sub-app:** {ValueIQ | RebateIQ | AccessIQ}
-**Access:** {Who can access — e.g., "Manufacturer + COEUS only. Payer sees nothing."}
+**Access:** {Who can access — e.g., "Manufacturer + Admin only. Payer sees nothing."}
 **Permissions:** {e.g., `VBC_READ`, `VBC_WRITE` — exact backend enum values}
 **Reload:** {Which reload counters / refetches to trigger after mutations}
 
@@ -236,7 +236,7 @@ const { Page } = lazyImport(() => import("..."), "{Page}");
 - {Loading states}
 - {Empty states}
 - {Error states}
-- {User type gating — what COEUS/Manufacturer/Payer each see}
+- {User type gating — what Admin/Manufacturer/Payer each see}
 - {Form validation rules}
 - {Navigation flows}
 
@@ -247,7 +247,7 @@ const { Page } = lazyImport(() => import("..."), "{Page}");
 - **API contracts are authoritative.** Extract exact paths, methods, query params, request bodies, and response shapes from the backend code. Do not guess.
 - **Include every field.** For request/response schemas, list every field with its type, optionality, and any validation constraints.
 - **Document error cases explicitly.** Every endpoint should list what returns 400, 403, 404, 409, etc.
-- **Specify access control per endpoint.** Which user types (COEUS, Manufacturer, Payer) can call it? What happens if the wrong type calls it?
+- **Specify access control per endpoint.** Which user types (Admin, Manufacturer, Payer) can call it? What happens if the wrong type calls it?
 - **Map backend types to TypeScript.** `str` → `string`, `int` → `number`, `Decimal` → `number`, `datetime` → `string` (ISO 8601), `Optional[X]` → `X | null`, `List[X]` → `X[]`.
 - **Include the Axios function signature.** Show exact API call with typed return — the consuming agent shouldn't have to guess the HTTP client pattern.
 - **Show component file paths.** The consuming agent must know where to create each file.
@@ -279,7 +279,7 @@ Before finalizing, verify:
 - [ ] Permission strings match `BuiltInPermissions` enum values exactly
 - [ ] Enum values match backend `constants.py` exactly
 - [ ] Response schemas match what the backend actually returns (check `schema.py`)
-- [ ] The three user types (COEUS, Manufacturer, Payer) are correctly mapped per endpoint
+- [ ] The three user types (Admin, Manufacturer, Payer) are correctly mapped per endpoint
 - [ ] TypeScript interfaces cover every field in the API response
 - [ ] API function signatures use correct Axios patterns (no `.data` unwrap)
 - [ ] Route paths follow existing app conventions

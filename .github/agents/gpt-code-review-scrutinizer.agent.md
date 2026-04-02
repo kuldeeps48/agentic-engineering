@@ -21,7 +21,7 @@ For each finding in the review, evaluate:
 Also check for issues the original review may have **missed entirely**:
 
 - Transaction safety (missing `db.begin_nested()` for multi-write background tasks)
-- Three-user authorization gaps (COEUS / Manufacturer / Payer branching)
+- Three-user authorization gaps (Admin / Manufacturer / Payer branching)
 - Multi-tenancy violations (`__table_args__` missing, cross-tenant data leaks)
 - Missing `tables.py` sync for new tenant tables
 - IDOR risks, missing permission checks

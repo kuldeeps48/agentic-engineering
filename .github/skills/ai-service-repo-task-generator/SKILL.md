@@ -2,26 +2,26 @@
 name: ai-service-repo-task-generator
 description: >-
   Generates ordered, numbered task files for implementing features in the
-  coebra-ai (platform-ai) repo — a Python FastAPI microservice for AI/ML
+  platform-ai (platform-ai) repo — a Python FastAPI microservice for AI/ML
   processing (RAG chat, document analysis, OCR, vector search, launch planning).
   Creates self-contained, dependency-aware implementation guides that
   an AI coding agent can follow file-by-file in separate chat sessions.
   Bakes in all AI service repo conventions so task files are immediately actionable.
   USE FOR: generate AI service tasks, AI implementation plan, AI task files,
-  AI service handoff, coebra-ai docs, platform-ai feature tasks, AI microservice tasks.
+  AI service handoff, platform-ai docs, platform-ai feature tasks, AI microservice tasks.
   DO NOT USE FOR: backend development (use api-patterns or new-module skill),
   database migrations (use migrations skill), frontend tasks (use frontend-repo-task-generator skill).
 ---
 
-# AI Service Task Generator — coebra-ai (platform-ai)
+# AI Service Task Generator — platform-ai (platform-ai)
 
-Generate **ordered, numbered task files** for implementing features in the `coebra-ai` repo. Each task file is a self-contained guide with API contracts, database operations, AI/ML pipeline specs, event queue integration, and multi-tenant handling — ready for an AI coding agent to follow file-by-file.
+Generate **ordered, numbered task files** for implementing features in the `platform-ai` repo. Each task file is a self-contained guide with API contracts, database operations, AI/ML pipeline specs, event queue integration, and multi-tenant handling — ready for an AI coding agent to follow file-by-file.
 
-## Target Repo: coebra-ai (platform-ai)
+## Target Repo: platform-ai (platform-ai)
 
 | Aspect     | Detail                                                                                                            |
 | ---------- | ----------------------------------------------------------------------------------------------------------------- |
-| Type       | Internal microservice — consumed by coebra-backend via REST API, not client-facing                                |
+| Type       | Internal microservice — consumed by platform-backend via REST API, not client-facing                                |
 | Runtime    | Python 3.12, FastAPI, Uvicorn                                                                                     |
 | AI/ML      | Azure OpenAI (GPT-5-nano), sentence-transformers (`all-MiniLM-L6-v2`, 384-dim), spaCy (NER/data masking), NLTK    |
 | Databases  | Azure SQL Server (SQLAlchemy Core, pyodbc) for multi-tenant app data; PostgreSQL + pgvector for vector embeddings |
@@ -34,8 +34,8 @@ Generate **ordered, numbered task files** for implementing features in the `coeb
 ### Architecture Overview
 
 ```
-coebra-backend → inserts row into AI_EVENT_QUEUE → coebra-ai polls every 3s → dispatches by FEATURE_NAME
-coebra-backend → direct REST calls to coebra-ai for chat, summaries, etc.
+platform-backend → inserts row into AI_EVENT_QUEUE → platform-ai polls every 3s → dispatches by FEATURE_NAME
+platform-backend → direct REST calls to platform-ai for chat, summaries, etc.
 ```
 
 ### Multi-Tenancy
@@ -65,7 +65,7 @@ coebra-backend → direct REST calls to coebra-ai for chat, summaries, etc.
 ### Repo Structure
 
 ```
-coebra-ai/
+platform-ai/
   ai_services/          # AI logic organized by feature
     chat/               # RAG chat (streaming SSE)
     summary/            # Document summarization
@@ -166,7 +166,7 @@ Rules for this pass:
 - Mask PII with spaCy NER before sending to Azure OpenAI
 - Use shared Azure OpenAI client/config
 - SSE for streaming chat responses
-- FEATURE_NAME must match AIEventQueueFeatureName enum in coebra-backend
+- FEATURE_NAME must match AIEventQueueFeatureName enum in platform-backend
 - Document expected AI_EVENT_QUEUE payload structure
 ```
 

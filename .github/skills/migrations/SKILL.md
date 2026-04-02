@@ -1,12 +1,12 @@
 ---
 name: migrations
 description: >-
-  Create and manage SQL migrations for the COEBRA healthcare SaaS backend (Azure SQL Server). Handles tenant and platform schema changes, permission inserts, table creation, and tables.py sync.
+  Create and manage SQL migrations for the Platform healthcare SaaS backend (Azure SQL Server). Handles tenant and platform schema changes, permission inserts, table creation, and tables.py sync.
   USE FOR: create migration, add column, alter table, create table, drop column, add index, add permission, new permission, schema change, database change, modify table, rename column, add foreign key, migration file, SQL migration, tenant table, platform table.
   DO NOT USE FOR: writing application code (use copilot-instructions.md), creating mockups (use mockup-guidelines skill), code review (use code-review skill).
 ---
 
-# Migrations — COEBRA Platform Backend
+# Migrations — Platform Backend
 
 > **CRITICAL:** Getting migrations wrong can silently break tenant provisioning, corrupt data, or cause production failures. Follow every step carefully.
 

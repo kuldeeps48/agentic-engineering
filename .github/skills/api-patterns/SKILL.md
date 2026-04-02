@@ -1,12 +1,12 @@
 ---
 name: api-patterns
 description: >-
-  Canonical API endpoint patterns for the COEBRA healthcare SaaS backend. Covers response shapes, status codes, filtering, three-user authorization, audit logging, transactions, and request.state usage.
+  Canonical API endpoint patterns for the Platform healthcare SaaS backend. Covers response shapes, status codes, filtering, three-user authorization, audit logging, transactions, and request.state usage.
   USE FOR: add endpoint, new endpoint, new route, API design, response format, status code, pagination, filtering, query params, list endpoint, detail endpoint, create endpoint, update endpoint, delete endpoint, PATCH endpoint, three-user auth, audit log, tenant_app_id validation, request.state, is_app, transaction, error handling, HTTPException, how to return data, response shape, bulk endpoint, file upload endpoint.
   DO NOT USE FOR: scaffolding a brand-new module from scratch (use new-module skill), database migrations (use migrations skill), code review (use code-review skill), creating mockups (use mockup-guidelines skill).
 ---
 
-# API Endpoint Patterns — COEBRA Platform Backend
+# API Endpoint Patterns — Platform Backend
 
 > **Purpose:** Canonical patterns for designing and implementing API endpoints. Use this skill when adding new routes to **existing** modules, or when the `new-module` skill's basic CRUD template isn't enough for real-world complexity.
 >
@@ -17,7 +17,7 @@ description: >-
 ## 0. Before You Start
 
 1. **Search existing controllers** for similar endpoints before writing new ones. Run `grep` or semantic search to find how comparable features are implemented.
-2. **Identify the caller types** — does this endpoint serve COEUS, Manufacturer, and/or Payer users? This drives authorization and data scoping.
+2. **Identify the caller types** — does this endpoint serve Admin, Manufacturer, and/or Payer users? This drives authorization and data scoping.
 3. **Identify whether `@is_app` is needed** — if the route is app-specific (ValueIQ/RebateIQ/AccessIQ), use `@is_app`. If platform-wide, omit it.
 
 ---
@@ -573,7 +573,7 @@ def get_items(request: Request, x_tenant_app_id: Annotated[int, Header()]):
 
 ## 7. Three-User Authorization
 
-Every app-scoped route must consider three caller types: **COEUS** (platform operator), **Manufacturer** (customer who owns the tenant), and **Payer** (participant organization).
+Every app-scoped route must consider three caller types: **Admin** (platform operator), **Manufacturer** (customer who owns the tenant), and **Payer** (participant organization).
 
 ### Pattern A: Helper Function (Preferred for Sub-Modules)
 
@@ -587,13 +587,13 @@ from common.utils import is_customer_user
 from fastapi import HTTPException, Request
 
 
-def _verify_manufacturer_or_coeus(request: Request):
-    """Verify caller is COEUS or the manufacturer. Raises 403 for payer users."""
+def _verify_manufacturer_or_admin(request: Request):
+    """Verify caller is Admin or the manufacturer. Raises 403 for payer users."""
     current_user = get_current_user()
     org_id = get_current_user_organization_id()
     tenant = request.state.tenant_app.tenant
 
-    if current_user.is_coeus_user:
+    if current_user.is_admin_user:
         return
     if is_customer_user(current_user, tenant, org_id):
         return
@@ -607,7 +607,7 @@ Call as the first line in every handler:
 
 ```python
 def create_item(request: Request, body: CreateItemBody):
-    _verify_manufacturer_or_coeus(request)
+    _verify_manufacturer_or_admin(request)
     # ... rest of handler ...
 ```
 
@@ -622,7 +622,7 @@ current_user = get_current_user()
 org_id = get_current_user_organization_id()
 tenant = request.state.tenant_app.tenant
 
-if not (current_user.is_coeus_user or is_customer_user(current_user, tenant, org_id)):
+if not (current_user.is_admin_user or is_customer_user(current_user, tenant, org_id)):
     raise HTTPException(
         status_code=HTTPStatus.FORBIDDEN,
         detail="User does not have access to this resource",
@@ -633,15 +633,15 @@ if not (current_user.is_coeus_user or is_customer_user(current_user, tenant, org
 
 ### Pattern C: Full Three-Way Branching with Data Scoping
 
-When COEUS, Manufacturer, and Payer all have access but see **different data**:
+When Admin, Manufacturer, and Payer all have access but see **different data**:
 
 ```python
 current_user = get_current_user()
 org_id = get_current_user_organization_id()
 tenant_app = request.state.tenant_app
 
-if current_user.is_coeus_user or is_customer_user(current_user, tenant_app.tenant, org_id):
-    # COEUS or Manufacturer: full access to all data
+if current_user.is_admin_user or is_customer_user(current_user, tenant_app.tenant, org_id):
+    # Admin or Manufacturer: full access to all data
     items = crud_service.get_all_items(tenant_app_id=tenant_app.id)
 else:
     # Payer: scoped to their participant's data
@@ -665,18 +665,18 @@ else:
 
 | Scenario                                               | Pattern                                                                |
 | ------------------------------------------------------ | ---------------------------------------------------------------------- |
-| All routes in a sub-module are manufacturer/COEUS only | **A** — helper function                                                |
+| All routes in a sub-module are manufacturer/Admin only | **A** — helper function                                                |
 | One-off route needs the check                          | **B** — inline                                                         |
 | Route returns different data per caller type           | **C** — full branching                                                 |
-| Route explicitly blocks COEUS (e.g., chat messaging)   | Custom: `if current_user.is_coeus_user: raise HTTPException(403, ...)` |
+| Route explicitly blocks Admin (e.g., chat messaging)   | Custom: `if current_user.is_admin_user: raise HTTPException(403, ...)` |
 
 ### Key Functions
 
 | Function                                   | From                     | Returns    | Purpose                                                                                             |
 | ------------------------------------------ | ------------------------ | ---------- | --------------------------------------------------------------------------------------------------- |
-| `current_user.is_coeus_user`               | Property on `User` model | `bool`     | `True` if email domain is `@1coeus.com` or `@coebra.ai`                                             |
+| `current_user.is_admin_user`               | Property on `User` model | `bool`     | `True` if email domain is `@admin.com`                                             |
 | `is_customer_user(user, tenant, org_id)`   | `common.utils`           | `bool`     | `True` if user's org matches the tenant's owning org (manufacturer)                                 |
-| `is_valid_user_organization(user, org_id)` | `common.utils`           | Raises 401 | Side-effect: raises `HTTPException(401)` if non-COEUS user doesn't match org. Use for invite routes |
+| `is_valid_user_organization(user, org_id)` | `common.utils`           | Raises 401 | Side-effect: raises `HTTPException(401)` if non-Admin user doesn't match org. Use for invite routes |
 | `get_current_user_organization_id()`       | `common.security`        | `int`      | From `X-Organization-Id` header                                                                     |
 
 ---

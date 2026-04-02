@@ -6,7 +6,7 @@ description: >-
   DO NOT USE FOR: creating new skills from scratch (use agent-customization skill), writing application code, code review (use code-review skill).
 ---
 
-# Update Knowledge — COEBRA Platform Backend
+# Update Knowledge — Platform Backend
 
 > **Purpose:** Take learnings from the current session and update all relevant knowledge stores so the insights persist across conversations and agents.
 

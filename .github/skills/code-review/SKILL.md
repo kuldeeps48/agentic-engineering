@@ -1,12 +1,12 @@
 ---
 name: code-review
 description: >-
-  Thorough code review for the COEBRA healthcare SaaS backend. Checks for logical flaws, inconsistencies, missing pieces, security issues, and adherence to project patterns.
+  Thorough code review for the Platform healthcare SaaS backend. Checks for logical flaws, inconsistencies, missing pieces, security issues, and adherence to project patterns.
   USE FOR: code review, review code, review my changes, review this PR, review pull request, check my code, find bugs, find issues, audit code, review implementation, sanity check, look for problems, what did I miss, review diff, review branch.
   DO NOT USE FOR: writing new code from scratch, generating features, creating mockups (use mockup-guidelines skill).
 ---
 
-# Code Review — COEBRA Platform Backend
+# Code Review — Platform Backend
 
 > **Purpose:** Perform a thorough, critical code review. Your job is to find problems, not to approve code. Be constructive but direct.
 
@@ -86,7 +86,7 @@ Check against the established patterns in `copilot-instructions.md`:
 - **Nested savepoint trap (SQLAlchemy 2.0):** If a `begin_nested()` block calls a function that itself does `begin_nested()` + `session.commit()`, the inner commit releases ALL savepoints and commits the outermost transaction. Verify: does every function called inside a `begin_nested()` either (a) accept `in_transaction` and skip its own commit when `True`, or (b) never call `session.commit()`? Also check that deferred side effects (AAD, email) are returned, not executed, when `in_transaction=True`.
 - **Behavior over rules:** When reviewing code modeled on an existing reference, understand _why_ the reference does something before flagging it as a pattern violation. Trace the full behavior (transaction boundaries, commit/rollback paths, error flows). A structural rule like "no DB access in service files" does not override the need for transaction control.
 - **Enum comparisons:** Since `BaseSchema` has `use_enum_values=True`, are enum fields compared with `.value` strings, not enum instances?
-- **Three-user authorization:** For routes that handle participant-scoped data, does the controller branch on caller type (`current_user.is_coeus_user`, `is_customer_user()`, payer ownership check)? Is payer ownership validated by comparing `participant.organization_id` against `get_current_user_organization_id()`? Does COEUS bypass ownership checks? Are manufacturer-only routes blocked for payer users (and vice versa)?
+- **Three-user authorization:** For routes that handle participant-scoped data, does the controller branch on caller type (`current_user.is_admin_user`, `is_customer_user()`, payer ownership check)? Is payer ownership validated by comparing `participant.organization_id` against `get_current_user_organization_id()`? Does Admin bypass ownership checks? Are manufacturer-only routes blocked for payer users (and vice versa)?
 - **FastAPI route ordering:** Are literal routes (e.g., `/gaps`, `/detect`) registered **before** parameterized routes (e.g., `/{request_id}`) on the same HTTP method? Parameterized routes act as catch-alls and cause 422 errors if they shadow literal ones.
 - **Imports at module top:** Are all imports at the top of the file? Inline/lazy imports inside functions make dependencies hard to trace. Only acceptable for genuine circular-import issues (and must be documented).
 - **Azure SQL case-insensitivity:** Are there unnecessary `func.lower()` calls in SQLAlchemy string filters? Azure SQL default collation is case-insensitive — `func.lower()` is harmless but redundant.
